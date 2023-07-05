@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Seo from "../../components/HeadTitle";
 
 type Movie = {
@@ -18,31 +17,11 @@ type Movie = {
   vote_count: number;
 };
 
-export default function Home() {
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-
-  const options = {
-    method: "GET",
-    headers: {
-      accept: "application/json",
-      Authorization: process.env.MOVIE_AUTH as string,
-    },
-  };
-
-  useEffect(() => {
-    (async () => {
-      const { results } = await (await fetch("/api/movies", options)).json();
-      setIsLoading(false);
-      setMovies(results);
-      console.log(results);
-    })();
-  }, []);
+export default function Home({ results }: { results: Movie[] }) {
   return (
     <div className="container">
       <Seo title="Home" />
-      {isLoading && <h4>Loading...</h4>}
-      {movies?.map((movie) => (
+      {results?.map((movie) => (
         <div key={movie.id} className="movie">
           <img src={`https://image.tmdb.org/t/p/w500/${movie.poster_path}`} />
           <h4>{movie.original_title}</h4>
@@ -76,4 +55,22 @@ export default function Home() {
       `}</style>
     </div>
   );
+}
+
+export async function getServerSideProps() {
+  const options = {
+    method: "GET",
+    headers: {
+      accept: "application/json",
+      Authorization: process.env.MOVIE_AUTH as string,
+    },
+  };
+  const { results } = await (
+    await fetch("http://localhost:3000/api/movies", options)
+  ).json();
+  return {
+    props: {
+      results,
+    },
+  };
 }
