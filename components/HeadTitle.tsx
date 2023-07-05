@@ -6,9 +6,10 @@ type Props = {
 };
 
 const Seo: React.FC<Props> = ({ title }) => {
+  const titlemsg = `${title} | Next Movie`;
   return (
     <Head>
-      <title>{title} | Next Movie</title>
+      <title>{titlemsg}</title>
     </Head>
   );
 };
